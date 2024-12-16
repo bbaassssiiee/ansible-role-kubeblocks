@@ -36,6 +36,7 @@
 
     # This task will be skipped in check mode
     - name: Ensure kbcli installed
+      become: true
       ansible.builtin.dnf:
         name: "file:///tmp/kbcli.{{ kbcli_pkg_ext }}"
         disable_gpg_check: true
@@ -47,6 +48,7 @@
 
     # This task will be skipped in check mode
     - name: Ensure kbcli installed
+      become: true
       ansible.builtin.apt:
         deb: "file:///tmp/kbcli.{{ kbcli_pkg_ext }}"
         allow_unauthenticated: true
