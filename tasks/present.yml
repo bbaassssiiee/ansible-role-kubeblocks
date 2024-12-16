@@ -1,4 +1,10 @@
 ---
+- name: Install dependencies
+  ansible.builtin.package:
+    state: present
+    name:
+      - libglvnd-glx
+
 - name: Find kbcli release
   when: kbcli_download_url is not defined
   become: false
