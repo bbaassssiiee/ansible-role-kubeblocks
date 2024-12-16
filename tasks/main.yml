@@ -1,5 +1,10 @@
+---
 # Main tasks entry point for the role
 
-- name: "Converge state - {{ desired_state }}"
-  ansible.builtin.include_tasks: "{{ desired_state }}.yml"
+- name: Install kbcli
+  when: use_kbcli | bool
+  ansible.builtin.include_tasks: "kbcli.yml"
 
+- name: Install KubeBlocks
+  when: use_kubeblocks | bool
+  ansible.builtin.include_tasks: "kubeblocks.yml"

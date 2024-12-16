@@ -1,6 +1,6 @@
 galaxy_info:
   author: Bas Meijer
-  description: Install kbcli to work with Kubeblocks
+  description: Install Kubeblocks
   namespace: bbaassssiiee
   role_name: kubeblocks
   license: MIT

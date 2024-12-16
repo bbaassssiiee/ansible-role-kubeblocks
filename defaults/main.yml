@@ -1,6 +1,15 @@
 ---
+# kncli
 kbcli_releases_url: 'https://api.github.com/repos/apecloud/kbcli/releases/latest'
 kbcli_repo_url: 'https://github.com/apecloud/kbcli/releases/download'
 desired_state: present
 kbcli_download_package: true
 kbcli_path: /usr/local/bin
+
+# KubeBlocks
+namespace: kb-system
+crd_url: 'https://github.com/apecloud/kubeblocks/releases/download/v0.9.2/kubeblocks_crds.yaml'
+crd_manifest: kubeblocks_crds.yaml
+helm_repo_name: kubeblocks
+helm_chart_name: kubeblocks
+helm_repo_url: 'https://apecloud.github.io/helm-charts'
