@@ -6,10 +6,10 @@
     dest: "files/{{ crd_manifest }}"
     mode: '0664'
 
-- name: Install Helm Diff
-  kubernetes.core.helm_plugin:
-    plugin_path: "https://github.com/databus22/helm-diff"
-    state: present
+#- name: Install Helm Diff
+#  kubernetes.core.helm_plugin:
+#    plugin_path: "https://github.com/databus22/helm-diff"
+#    state: present
 
 - name: Create dependent CRDs
   kubernetes.core.k8s:
