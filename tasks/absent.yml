@@ -1,0 +1,5 @@
+---
+ansible.builtin.package:
+  name: kbcli
+  state: absent
+
