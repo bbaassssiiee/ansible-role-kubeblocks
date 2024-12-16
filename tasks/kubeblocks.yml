@@ -1,36 +1,31 @@
 ---
 # ~/.kube/config should be valid
-- name: Manage KubeBlocks
-  hosts: localhost
-  become: false
-  tasks:
+- name: Download the manifest
+  ansible.builtin.get_url:
+    url: "{{ crd_url }}"
+    dest: "files/{{ crd_manifest }}"
+    mode: '0664'
 
-    - name: Download the manifest
-      ansible.builtin.get_url:
-        url: "{{ crd_url }}"
-        dest: "files/{{ crd_manifest }}"
-        mode: '0664'
+- name: Install Helm Diff
+  kubernetes.core.helm_plugin:
+    plugin_path: "https://github.com/databus22/helm-diff"
+    state: present
 
-    - name: Install Helm Diff
-      kubernetes.core.helm_plugin:
-        plugin_path: "https://github.com/databus22/helm-diff"
-        state: present
+- name: Create dependent CRDs
+  kubernetes.core.k8s:
+    state: present
+    src: "files/{{ crd_manifest }}"
+    namespace: kube-system
 
-    - name: Create dependent CRDs
-      kubernetes.core.k8s:
-        state: present
-        src: "files/{{ crd_manifest }}"
-        namespace: kube-system
+- name: Add the Helm repository
+  kubernetes.core.helm_repository:
+    name: "{{ helm_repo_name }}"
+    url: "{{ helm_repo_url }}"
+    state: present
 
-    - name: Add the Helm repository
-      kubernetes.core.helm_repository:
-        name: "{{ helm_repo_name }}"
-        url: "{{ helm_repo_url }}"
-        state: present
-
-    - name: Install the chart
-      kubernetes.core.helm:
-        name: "{{ helm_chart_name }}"
-        chart_ref: "{{ helm_repo_name }}/{{ helm_chart_name }}"
-        release_namespace: "{{ namespace }}"
-        state: present
+- name: Install the chart
+  kubernetes.core.helm:
+    name: "{{ helm_chart_name }}"
+    chart_ref: "{{ helm_repo_name }}/{{ helm_chart_name }}"
+    release_namespace: "{{ namespace }}"
+    state: present
