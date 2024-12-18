@@ -1,13 +1,16 @@
 - name: "Ensure add-on {{ item.addon_name }} is {{ item.state }}."
   kubernetes.core.helm:
     name: "{{ item.addon_name }}"
-    chart_ref: "{{ helm_repo_name }}/{{ item.addon_name }}"
+    chart_ref: "{{ helm_repo_name }}/{{ item.chart_name }}"
     chart_version: "{{ item.version }}"
     release_namespace: "{{ item.addon_namespace }}"
     create_namespace: true
     state: "{{ item.state }}"
 
-# - name: "Ensure add-on {{ item.addon_name }} is {{ 'enabled' if item.enabled else 'disabled' }}."
-#  when: item.state == 'present'
-#  ansible.builtin.shell: "kbcli addon {{ 'enable' if item.enabled else 'disable' }} {{ item.addon_name }}"
-#  changed_when: true
+- name: "Ensure add-on {{ item.addon_name }} is enabled."
+  when: 
+    - item.state == 'present'
+    - item.enabled | bool
+  ansible.builtin.command: "kbcli addon enable {{ item.addon_name }}"
+  register: addon_cmd
+  changed_when: "'no change' not in addon_cmd.stdout"
