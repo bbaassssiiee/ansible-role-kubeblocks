@@ -9,6 +9,5 @@
 
 - name: "Ensure add-on {{ item.addon_name }} is {{ 'enabled' if item.enabled else 'disabled' }}."
   when: item.state == 'present'
-  ansible.builtin.command:
-    cmd: "kbcli addon {{ 'enable' if item.enabled else 'disable' }} {{ item.addon_name }}"
+  ansible.builtin.shell: "kbcli addon {{ 'enable' if item.enabled else 'disable' }} {{ item.addon_name }}"
   changed_when: true
