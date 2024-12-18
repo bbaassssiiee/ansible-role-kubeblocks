@@ -1,7 +1,7 @@
 - name: "Ensure add-on {{ item.addon_name }} is {{ item.state }}."
   kubernetes.core.helm:
     name: "{{ item.addon_name }}"
-    chart_ref: "{{ helm_repo_name }}/{{ item.chart_name }}"
+    chart_ref: "{{ helm_repo_name }}/{{ item.addon_name }}"
     chart_version: "{{ item.version }}"
     release_namespace: "{{ item.addon_namespace }}"
     create_namespace: true
