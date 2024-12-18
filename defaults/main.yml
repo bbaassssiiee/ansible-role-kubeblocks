@@ -16,3 +16,94 @@ crd_manifest: kubeblocks_crds.yaml
 helm_repo_name: kubeblocks
 helm_chart_name: kubeblocks
 helm_repo_url: 'https://apecloud.github.io/helm-charts'
+
+kb_addons:
+  - name: alertmanager-webhook-adaptor
+    state: absent
+    enabled: false
+    version: 0.1.4
+  - name: apecloud-mysql
+    state: absent
+    enabled: false
+    version: 0.9.0
+  - name: apecloud-otel-collector
+    state: absent
+    enabled: false
+    version: 0.1.2-beta.3
+  - name: aws-load-balancer-controller
+    state: absent
+    enabled: false
+    version: 1.4.8
+  - name: csi-driver-nfs
+    state: present
+    enabled: false
+    version: 4.5.0
+  - name: csi-hostpath-driver
+    state: present
+    enabled: false
+    version: 0.7.0
+  - name: etcd
+    state: present
+    enabled: false
+    version: 0.9.0
+  - name: grafana
+    state: present
+    enabled: false
+    version: 6.43.5
+  - name: kafka
+    state: present
+    enabled: false
+    version: 0.9.0
+  - name: kubeblocks-csi-driver
+    state: present
+    enabled: false
+    version: 0.1.4
+  - name: llm                            
+    state: absent
+    enabled: false
+    version: 0.9.0
+  - name: loki
+    state: absent
+    enabled: false
+    version: 5.8.9
+  - name: mongodb
+    state: absent
+    enabled: false
+    version: 0.9.1
+  - name: mysql
+    state: absent
+    enabled: false
+    version: 0.9.3
+  - name: opensearch
+    state: present
+    enabled: false
+    version: 2.7.0
+  - name: postgresql
+    state: present
+    enabled: false
+    version: 0.9.0
+  - name: prometheus
+    state: present
+    enabled: false
+    version: 15.16.1
+  - name: pulsar
+    state: absent
+    enabled: false
+    version: 0.9.1
+  - name: qdrant
+    state: absent
+    enabled: false
+    version: 0.9.1
+  - name: redis
+    state: absent
+    enabled: false
+    version: 0.9.0
+  - name: snapshot-controller
+    state: present
+    enabled: false
+    version: 1.7.2
+  - name: victoria-metrics-agent
+    state: absent
+    enabled: false
+    version: 0.8.41
+
