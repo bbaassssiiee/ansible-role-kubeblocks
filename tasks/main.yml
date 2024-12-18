@@ -8,3 +8,8 @@
 - name: Install KubeBlocks
   when: use_kubeblocks | bool
   ansible.builtin.include_tasks: "kubeblocks.yml"
+
+- name: Install KubeBlocks Add-ons
+  when: use_kubeblocks | bool
+  ansible.builtin.include_tasks: "addons.yml"
+  loop: "{{ kubeblocks_add_ons }}"

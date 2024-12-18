@@ -17,92 +17,104 @@ helm_repo_name: kubeblocks
 helm_chart_name: kubeblocks
 helm_repo_url: 'https://apecloud.github.io/helm-charts'
 
-kb_addons:
-  - name: alertmanager-webhook-adaptor
+kubeblocks_add_ons:
+  - addon_name: alertmanager-webhook-adaptor
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.1.4
-  - name: apecloud-mysql
+  - addon_name: apecloud-mysql
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.0
-  - name: apecloud-otel-collector
+  - addon_name: apecloud-otel-collector
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.1.2-beta.3
-  - name: aws-load-balancer-controller
+  - addon_name: aws-load-balancer-controller
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 1.4.8
-  - name: csi-driver-nfs
+  - addon_name: csi-driver-nfs
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 4.5.0
-  - name: csi-hostpath-driver
+  - addon_name: csi-hostpath-driver
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 0.7.0
-  - name: etcd
-    state: present
-    enabled: false
-    version: 0.9.0
-  - name: grafana
+  - addon_name: grafana
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 6.43.5
-  - name: kafka
+  - addon_name: kafka
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 0.9.0
-  - name: kubeblocks-csi-driver
-    state: present
-    enabled: false
-    version: 0.1.4
-  - name: llm                            
+  - addon_name: llm                            
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.0
-  - name: loki
+  - addon_name: loki
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 5.8.9
-  - name: mongodb
+  - addon_name: mongodb
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.1
-  - name: mysql
+  - addon_name: mysql
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.3
-  - name: opensearch
+  - addon_name: opensearch
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 2.7.0
-  - name: postgresql
+  - addon_name: postgresql
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 0.9.0
-  - name: prometheus
+  - addon_name: prometheus
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 15.16.1
-  - name: pulsar
+  - addon_name: pulsar
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.1
-  - name: qdrant
+  - addon_name: qdrant
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.1
-  - name: redis
+  - addon_name: redis
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.9.0
-  - name: snapshot-controller
+  - addon_name: snapshot-controller
+    addon_namespace: kb-system
     state: present
     enabled: false
     version: 1.7.2
-  - name: victoria-metrics-agent
+  - addon_name: victoria-metrics-agent
+    addon_namespace: kb-system
     state: absent
     enabled: false
     version: 0.8.41
