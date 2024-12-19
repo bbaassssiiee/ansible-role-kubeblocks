@@ -31,3 +31,4 @@
     release_namespace: "{{ namespace }}"
     create_namespace: true
     state: present
+    wait: true
