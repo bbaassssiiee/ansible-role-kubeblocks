@@ -27,18 +27,6 @@ kubeblocks_add_ons:
     state: absent
     enabled: false
     version: 1.4.8
-  - addon_name: csi-driver-nfs
-    state: absent
-    enabled: false
-    version: 4.5.0
-  - addon_name: csi-hostpath-driver
-    state: present
-    enabled: enabled
-    version: 0.7.0
-  - addon_name: grafana
-    state: present
-    enabled: true
-    version: 6.43.5
   - addon_name: llm
     state: absent
     enabled: false
@@ -55,10 +43,6 @@ kubeblocks_add_ons:
     state: absent
     enabled: false
     version: 0.9.3
-  - addon_name: prometheus
-    state: present
-    enabled: true
-    version: 15.16.1
   - addon_name: pulsar
     state: absent
     enabled: false
@@ -75,10 +59,6 @@ kubeblocks_add_ons:
     state: present
     enabled: true
     version: 0.9.0
-  - addon_name: snapshot-controller
-    state: present
-    enabled: false
-    version: 1.7.2
   - addon_name: victoria-metrics
     state: present
     enabled: true
