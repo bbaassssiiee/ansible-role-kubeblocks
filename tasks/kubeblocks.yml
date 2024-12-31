@@ -46,5 +46,5 @@
     set -o pipefail;
     kubectl --kube-config={{ k8s_auth_kubeconfig }} get crd -o name \
     | grep kubeblocks.io \
-    | xargs kubectl --kube-config={{ k8s_auth_kubeconfig }} delete
+    | xargs kubectl --kubeconfig={{ k8s_auth_kubeconfig }} delete
   changed_when: true
