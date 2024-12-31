@@ -59,10 +59,6 @@ kubeblocks_add_ons:
     state: absent
     enabled: false
     version: 0.9.3
-  - addon_name: opensearch
-    state: present
-    enabled: true
-    version: 0.9.0
   - addon_name: prometheus
     state: present
     enabled: true
@@ -96,6 +92,10 @@ kubeblocks_add_ons:
     enabled: true
     version: 0.6.3
   - addon_name: zookeeper
+    state: present
+    enabled: true
+    version: 0.9.0
+  - addon_name: opensearch
     state: present
     enabled: true
     version: 0.9.0
