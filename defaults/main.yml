@@ -8,7 +8,8 @@ use_kubeblocks: false
 desired_state: present
 kbcli_download_package: true
 kbcli_path: /usr/local/bin
-
+# Semaphore does not pass $HOME so path might need to be more explicit.
+k8s_auth_kubeconfig: ~/.kube/config
 # KubeBlocks
 namespace: kb-system
 crd_url: 'https://github.com/apecloud/kubeblocks/releases/download/v0.9.2/kubeblocks_crds.yaml'
