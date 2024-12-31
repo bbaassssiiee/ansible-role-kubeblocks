@@ -23,9 +23,16 @@
         url: "{{ helm_repo_url }}"
         state: present
 
-- name: Remove KubeBlocks Helm repository
+- name: Remove KubeBlocks
   when: desired_state == 'absent'
-  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} kubeblocks uninstall"
+  ansible.builtin.command: |
+    "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} kubeblocks uninstall \
+       --auto-approve=true \
+       --remove-namespace=true \
+       --remove-pvcs=false \
+       --remove-pvs=false \
+    "
+  changed_when: true
 
 - name: Manage the Helm chart
   kubernetes.core.helm:
