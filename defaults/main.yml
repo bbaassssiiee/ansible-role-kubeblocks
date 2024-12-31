@@ -32,7 +32,7 @@ kubeblocks_add_ons:
     enabled: false
     version: 0.9.0
   - addon_name: loki
-    state: absent
+    state: present
     enabled: false
     version: 5.8.9
   - addon_name: mongodb
