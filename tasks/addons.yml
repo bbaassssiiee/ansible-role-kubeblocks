@@ -1,6 +1,6 @@
 - name: "Ensure add-on state present: {{ item.addon_name }}"
   when: item.state == 'present'
-  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon install {{ item.addon_name }} --version {{ item.addon_version }}"
+  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon install {{ item.addon_name }} --version {{ item.version }}"
 
 - name: "Ensure add-on enablement: {{ item.addon_name }}."
   when: item.state == 'present'
