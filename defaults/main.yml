@@ -43,7 +43,7 @@ kubeblocks_add_ons:
     enabled: enabled
     version: 0.7.0
   - addon_name: grafana
-    addon_namespace: monitoring
+    addon_namespace: kb-system
     state: present
     enabled: true
     version: 6.43.5
@@ -68,12 +68,12 @@ kubeblocks_add_ons:
     enabled: false
     version: 0.9.3
   - addon_name: opensearch
-    addon_namespace: monitoring
+    addon_namespace: kb-system
     state: present
     enabled: true
     version: 0.9.0
   - addon_name: prometheus
-    addon_namespace: monitoring
+    addon_namespace: kb-system
     state: present
     enabled: true
     version: 15.16.1
@@ -103,12 +103,12 @@ kubeblocks_add_ons:
     enabled: false
     version: 1.7.2
   - addon_name: victoria-metrics
-    addon_namespace: monitoring
+    addon_namespace: kb-system
     state: present
     enabled: true
     version: 0.9.0
   - addon_name: victoria-metrics-agent
-    addon_namespace: monitoring
+    addon_namespace: kb-system
     state: present
     enabled: true
     version: 0.6.3
