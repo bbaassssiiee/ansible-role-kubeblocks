@@ -3,8 +3,7 @@
     name: "kb-addon-{{ item.addon_name }}"
     chart_ref: "{{ helm_repo_name }}/{{ item.addon_name }}"
     chart_version: "{{ item.version }}"
-    release_namespace: "{{ item.addon_namespace }}"
-    create_namespace: true
+    release_namespace: 'kb-system'
     state: "{{ item.state }}"
 
 - name: "Ensure add-on {{ item.addon_name }} is {{ 'enabled' if item.enabled else 'disabled' }}."
