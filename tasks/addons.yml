@@ -1,12 +1,12 @@
-- name: "Ensure add-on state: {{ item.addon_name }}"
-  kubernetes.core.helm:
-    name: "kb-addon-{{ item.addon_name }}"
-    chart_ref: "{{ helm_repo_name }}/{{ item.addon_name }}"
-    chart_version: "{{ item.version }}"
-    release_namespace: 'kb-system'
-    state: "{{ item.state }}"
+- name: "Ensure add-on state present: {{ item.addon_name }}"
+  when: item.state == 'present'
+  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon install {{ item.addon_name }} --version {{ item.addon_version"
 
 - name: "Ensure add-on enablement: {{ item.addon_name }}."
   when: item.state == 'present'
   ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon {{ 'enable' if item.enabled else 'disable' }} {{ item.addon_name }}"
   changed_when: true
+
+- name: "Ensure add-on state absent: {{ item.addon_name }}"
+  when: item.state == 'absent'
+  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon uninstall {{ item.addon_name }}"
