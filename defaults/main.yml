@@ -1,5 +1,5 @@
 ---
-# kncli
+# kbcli
 kbcli_releases_url: 'https://api.github.com/repos/apecloud/kbcli/releases/latest'
 kbcli_repo_url: 'https://github.com/apecloud/kbcli/releases/download'
 use_kbcli: true
@@ -13,7 +13,7 @@ k8s_auth_kubeconfig: ~/.kube/config
 # KubeBlocks
 crd_url: 'https://github.com/apecloud/kubeblocks/releases/download/v0.9.2/kubeblocks_crds.yaml'
 helm_repo_url: 'https://apecloud.github.io/helm-charts'
-
+helm_binary: /usr/local/bin/helm
 # KubeBlocks configuration depends on this Boolean:
 use_kb_addons: false
 
