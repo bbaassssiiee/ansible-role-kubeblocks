@@ -12,4 +12,3 @@
     quiet: true
     that:
       - "'kbcli' {{ package_clause }} ansible_facts.packages"
-

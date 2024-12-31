@@ -1,34 +1,50 @@
 ---
 # ~/.kube/config should be valid
-- name: Download the manifest
-  ansible.builtin.get_url:
-    url: "{{ crd_url }}"
-    dest: "files/{{ crd_manifest }}"
-    mode: '0664'
 
-# TODO: auth
-# - name: Install Helm Diff
-#   kubernetes.core.helm_plugin:
-#     plugin_path: "https://github.com/databus22/helm-diff"
-#     state: present
+- name: Configure KubeBlocks
+  when: desired_state == 'present'
+  block:
+    - name: Download the manifest
+      ansible.builtin.get_url:
+        url: "{{ crd_url }}"
+        dest: "files/{{ crd_manifest }}"
+        mode: '0664'
 
-- name: Create dependent CRDs
-  kubernetes.core.k8s:
-    state: present
-    src: "files/{{ crd_manifest }}"
-    namespace: kube-system
+    - name: Create dependent CRDs
+      kubernetes.core.k8s:
+        state: present
+        src: "files/{{ crd_manifest }}"
+        namespace: kube-system
 
-- name: Add the Helm repository
-  kubernetes.core.helm_repository:
-    name: "{{ helm_repo_name }}"
-    url: "{{ helm_repo_url }}"
-    state: present
+    - name: Add the KubeBlocks Helm repository
+      kubernetes.core.helm_repository:
+        binary_path: "{{ helm_binary }}"
+        name: "{{ helm_repo_name }}"
+        url: "{{ helm_repo_url }}"
+        state: present
 
-- name: Install the chart
+- name: Manage the Helm chart
   kubernetes.core.helm:
+    binary_path: "{{ helm_binary }}"
     name: "{{ helm_chart_name }}"
     chart_ref: "{{ helm_repo_name }}/{{ helm_chart_name }}"
     release_namespace: "{{ namespace }}"
     create_namespace: true
-    state: present
+    state: "{{ desired_state }}"
     wait: true
+
+- name: Remove KubeBlocks Helm repository
+  when: desired_state == 'absent'
+  kubernetes.core.helm_repository:
+    binary_path: "{{ helm_binary }}"
+    name: "{{ helm_repo_name }}"
+    state: absent
+
+- name: Remove KubeBlocks crds
+  when: desired_state == 'absent'
+  ansible.builtin.shell: |
+    set -o pipefail;
+    kubectl --kube-config={{ k8s_auth_kubeconfig }} get crd -o name \
+    | grep kubeblocks.io \
+    | xargs kubectl --kube-config={{ k8s_auth_kubeconfig }} delete
+  changed_when: true
