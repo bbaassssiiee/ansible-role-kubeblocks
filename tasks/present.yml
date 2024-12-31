@@ -1,5 +1,5 @@
 ---
-# Main tasks entry point for the role
+# when: desired_state == 'present'
 
 # Works
 - name: Install kbcli
