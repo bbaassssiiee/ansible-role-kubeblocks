@@ -10,7 +10,9 @@
   ignore_errors: true
 
 - name: "Ensure add-on enablement: {{ item.addon_name }}."
-  when: item.state == 'present'
+  when: 
+    - item.state == 'present'
+    - not addon_state.changed | bool
   ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon {{ 'enable' if item.enabled else 'disable' }} {{ item.addon_name }}"
   register: addon_enablement
   failed_when:
@@ -32,8 +34,3 @@
   failed_when: false
   ignore_errors: true
   changed_when: false
-
-- name: Results
-  ansible.builtin.debug: 
-    var: item_state
-    verbosity: 2
