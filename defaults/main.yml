@@ -33,12 +33,8 @@ kubeblocks_add_ons:
     enabled: true
     version: 0.9.0
   - addon_name: llm
-    state: absent
-    enabled: false
-    version: 0.9.0
-  - addon_name: loki
     state: present
-    enabled: true
+    enabled: false
     version: 0.9.0
   - addon_name: mongodb
     state: absent
@@ -53,30 +49,14 @@ kubeblocks_add_ons:
     enabled: true
     version: 0.9.0
   - addon_name: pulsar
-    state: absent
+    state: present
     enabled: false
     version: 0.9.1
   - addon_name: qdrant
-    state: absent
+    state: present
     enabled: false
     version: 0.9.1
   - addon_name: redis
-    state: present
-    enabled: true
-    version: 0.9.0
-  - addon_name: victoria-metrics
-    state: present
-    enabled: true
-    version: 0.9.0
-  - addon_name: victoria-metrics-agent
-    state: present
-    enabled: true
-    version: 0.6.3
-  - addon_name: zookeeper
-    state: present
-    enabled: true
-    version: 0.9.0
-  - addon_name: opensearch
     state: present
     enabled: true
     version: 0.9.0
