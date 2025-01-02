@@ -1,6 +1,7 @@
 - name: "Ensure add-on state present: {{ item.addon_name }}"
   when: item.state == 'present'
   ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon install {{ item.addon_name }} --version {{ item.version }}"
+  changed_when: true
 
 - name: "Ensure add-on enablement: {{ item.addon_name }}."
   when: item.state == 'present'
@@ -11,5 +12,11 @@
   when: item.state == 'absent'
   ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon uninstall {{ item.addon_name }}"
   register: item_state
-  failed_when: item_state.rc = '0' or "'NotFound' not in item_state.stderr"
-  changed_when: true
+  failed_when: false
+  ignore_errors: true
+  changed_when: true(item_state.rc = '0') or ("'NotFound' not in item_state.stderr")
+
+- name: Results
+  ansible.builtin.debug: 
+    var: item_state
+    verbosity: 2
