@@ -11,7 +11,5 @@
   when: item.state == 'absent'
   ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon uninstall {{ item.addon_name }}"
   register: item_state
-  failed_when:
-    - item_state.rc != '0'
-    - "'NotFound' not in item_state.stderr"
+  failed_when: item_state.rc = '0' or "'NotFound' not in item_state.stderr"
   changed_when: true
