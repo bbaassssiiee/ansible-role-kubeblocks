@@ -55,3 +55,4 @@
     | grep kubeblocks.io \
     | xargs kubectl --kubeconfig={{ k8s_auth_kubeconfig }} delete
   changed_when: true
+  failed_when: false  # for example rc 123 is empty list as inputs
