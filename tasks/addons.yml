@@ -18,11 +18,13 @@
   failed_when:
     - addon_enablement.rc != '0' 
     - "'enabled' not in addon_enablement.stdout"
+    - "'disabled' not in addon_enablement.stdout"
     - "'already disabled' not in addon_enablement.stdout"
     - "'no change' not in addon_enablement.stdout"
     - "'not being updated' not in addon_enablement.stdout"
   changed_when: 
     - "'enabled' in addon_enablement.stdout"
+    - "'disabled' in addon_enablement.stdout"
     - "'already disabled' not in addon_enablement.stdout"
     - "'no change' not in addon_enablement.stdout"
     - "'not being updated' not in addon_enablement.stdout"
