@@ -4,8 +4,9 @@
   register: addon_state
   changed_when: "'AlreadyExists' not in addon_state.stderr"
   failed_when:
-    - addon_state.rc != '0'
+    - addon_state.rc != '0' 
     - "'AlreadyExists' not in addon_state.stderr"
+    - "'installed successfully' not in addon_state.stdout"
   ignore_errors: true
 
 - name: "Ensure add-on enablement: {{ item.addon_name }}."
@@ -17,7 +18,10 @@
     - "'already disabled' not in addon_enablement.stdout"
     - "'no change' not in addon_enablement.stdout"
     - "'not being updated' not in addon_enablement.stdout"
-  changed_when: "'no change' not in addon_enablement.stdout"
+  changed_when: 
+    - "'already disabled' not in addon_enablement.stdout"
+    - "'no change' not in addon_enablement.stdout"
+    - "'not being updated' not in addon_enablement.stdout"
 
 - name: "Ensure add-on state absent: {{ item.addon_name }}"
   when: item.state == 'absent'
