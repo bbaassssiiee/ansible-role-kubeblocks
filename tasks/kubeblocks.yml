@@ -7,13 +7,13 @@
     - name: Download the manifest
       ansible.builtin.get_url:
         url: "{{ crd_url }}"
-        dest: "files/{{ crd_manifest }}"
+        dest: "{{ crd_manifest }}"
         mode: '0664'
 
     - name: Create dependent CRDs
       kubernetes.core.k8s:
         state: present
-        src: "files/{{ crd_manifest }}"
+        src: "{{ crd_manifest }}"
         namespace: kube-system
 
     - name: Add the KubeBlocks Helm repository
