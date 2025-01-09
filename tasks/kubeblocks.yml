@@ -4,17 +4,29 @@
 - name: Configure KubeBlocks
   when: desired_state == 'present'
   block:
+    - name: Create temp dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: temp
+      register: tempdir
+
     - name: Download the manifest
       ansible.builtin.get_url:
         url: "{{ crd_url }}"
-        dest: "{{ crd_manifest }}"
+        dest: "{{ tempdir.path }}/{{ crd_manifest }}"
         mode: '0664'
 
     - name: Create dependent CRDs
       kubernetes.core.k8s:
         state: present
-        src: "{{ crd_manifest }}"
+        src: "{{ tempdir.path }}/{{ crd_manifest }}"
         namespace: kube-system
+
+    - name: Remove the temp dir
+      when: tempdir.path is defined
+      ansible.builtin.file:
+        path: "{{ tempdir.path }}"
+        state: absent
 
     - name: Add the KubeBlocks Helm repository
       kubernetes.core.helm_repository:
