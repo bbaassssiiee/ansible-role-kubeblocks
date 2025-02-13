@@ -11,13 +11,11 @@
 
 - name: Display kubeblocks_info
   ansible.builtin.debug:
-    msg: "{{ kubeblocks_info.status.status }}"
+    msg: "{{ kubeblocks_info }}"
 
+# TODO some states are not covered yet
 - name: Manage the KubeBlocks chart
-  when:
-    - kubeblocks_info.status.status is not defined
-    - kubeblocks_info.status.status != "pending"
-    - kubeblocks_info.status.status != "deployed"
+  when: kubeblocks_info.status is not defined or ( kubeblocks_info.status.status != "pending" or kubeblocks_info.status.status != "deployed")
   ansible.builtin.command: >
     helm --kubeconfig {{ k8s_auth_kubeconfig }} install kubeblocks oci://{{ registry_host }}/helm-apecloud/kubeblocks
     --version 0.9.2
