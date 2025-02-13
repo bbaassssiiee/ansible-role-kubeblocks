@@ -1,0 +1,10 @@
+ansible-core<2.17.0
+helm-python
+jinja2>=3.1.5
+# Needed for jinja2 json_query templating
+jmespath==1.0.1
+# Needed for ansible.utils.validate module
+jsonschema==4.22.0
+kubernetes
+kubernetes-validate==1.31.0
+MarkupSafe==2.1.5
