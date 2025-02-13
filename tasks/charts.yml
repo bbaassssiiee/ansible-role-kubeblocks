@@ -1,0 +1,45 @@
+---
+# Synchronization of helm charts for on-prem use
+- name: Ensure KubeBlocks cache
+  ansible.builtin.file:
+    path: "{{ kubeblocks_cache }}"
+    state: directory
+    mode: '0755'
+
+- name: Pull KubeSpray helm charts
+  kubernetes.core.helm_pull:
+    chart_ref: "{{ item.addon_name }}"
+    chart_version: "{{ item.version }}"
+    repo_url: "{{ helm_upstream_repo_url }}"
+    untar_chart: false
+    destination: "{{ kubeblocks_cache }}"
+  when:
+    - item.state == "present"
+  loop: "{{ kubeblocks_add_ons }}"
+  loop_control:
+    label: "pull: {{ item.addon_name }}"
+
+- name: Unarchive charts
+  ansible.builtin.unarchive:
+    src: "{{ kubeblocks_cache }}/{{ item.addon_name }}-{{ item.version }}.tgz"
+    dest: "{{ kubeblocks_cache }}"
+    remote_src: true
+  when:
+    - item.state == "present"
+  loop: "{{ kubeblocks_add_ons }}"
+  loop_control:
+    label: "untar: {{ item.addon_name }}"
+
+- name: Push helm charts
+  ansible.builtin.command:
+    cmd: "helm push {{ kubeblocks_cache }}/{{ item.addon_name }}-{{ item.version }}.tgz oci://{{ registry_host }}/helm-apecloud/"
+  when:
+    - item.state == "present"
+  loop: "{{ kubeblocks_add_ons }}"
+  loop_control:
+    label: "push: {{ item.addon_name }}"
+
+- name: Generate local index.yaml for reference
+  ansible.builtin.command:
+    cmd: "helm --kubeconfig {{ k8s_auth_kubeconfig }} repo index {{ kubeblocks_cache }}"
+    creates: "{{ kubeblocks_cache }}/index.yaml"

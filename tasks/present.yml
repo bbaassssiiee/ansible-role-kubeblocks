@@ -1,18 +1,69 @@
 ---
 # when: desired_state == 'present'
+- name: Log input parameters
+  ansible.builtin.debug:
+    msg: |
+      use_kubeblocks: {{ use_kubeblocks }}
+      registry_user: {{ registry_user }}
 
-# Works
-- name: Install kbcli
-  when: use_kbcli | bool
-  ansible.builtin.include_tasks: "kbcli.yml"
+- name: Create directory for kubeblocks_repo
+  ansible.builtin.file:
+    path: "{{ kubeblocks_repo }}"
+    state: directory
+    mode: '0755'
 
-# Works
-- name: Install KubeBlocks
+# The logins can be read-only or read-write
+- name: Registry login for helm
+  environment:
+    REGISTRY_PASS: "{{ registry_pass }}"
+  ansible.builtin.command:
+    cmd: 'helm registry login "{{ registry_host }}" --username "{{ registry_user }}" --password $REGISTRY_PASS'
+
+- name: Registry login for docker
+  environment:
+    REGISTRY_PASS: "{{ registry_pass }}"
+  ansible.builtin.command:
+    cmd: 'docker login -u "{{ registry_user }}" -p$REGISTRY_PASS "{{ registry_host }}"'
+
+# Online tasks need read-write access
+- name: Online kubeblocks synchronization
+  when:
+    - use_kubeblocks | bool
+    - kubeblocks_update is defined
+    - kubeblocks_update | bool
+  block:
+    - name: Upload KubeBlocks charts
+      ansible.builtin.include_tasks: charts.yml
+
+    - name: Upload KubeBlocks images
+      ansible.builtin.include_tasks: images.yml
+      loop: "{{ kubeblocks_add_ons }}"
+      loop_control:
+        label: "images: {{ item }}"
+
+# Offline tasks below only need read-only access
+- name: Offline kubeblocks deployment
   when: use_kubeblocks | bool
-  ansible.builtin.include_tasks: "kubeblocks.yml"
+  block:
+    - name: Install Kubernetes resources
+      ansible.builtin.include_tasks: resources.yml
 
-# This needs more development
-- name: Manage KubeBlocks Add-ons
-  when: use_kb_addons | bool
-  ansible.builtin.include_tasks: "addons.yml"
-  loop: "{{ kubeblocks_add_ons }}"
+    - name: Install KubeBlocks helm chart
+      ansible.builtin.include_tasks: kubeblocks.yml
+
+    - name: Cleanup KubeBlocks default addons
+      ansible.builtin.include_tasks: cleanup.yml
+      loop: "{{ kubeblocks_add_ons }}"
+      loop_control:
+        label: "cleanup: {{ item }}"
+
+    - name: Manage KubeBlocks addons
+      ansible.builtin.include_tasks: addons.yml
+      loop: "{{ kubeblocks_add_ons }}"
+      loop_control:
+        label: "addon: {{ item }}"
+
+    - name: Generate local index.yaml for reference
+      ansible.builtin.command:
+        cmd: "helm --kubeconfig {{ k8s_auth_kubeconfig }} repo index {{ kubeblocks_repo }}"
+        creates: "{{ kubeblocks_repo }}/index.yaml"

@@ -1,0 +1,34 @@
+- name: "When not enabled run kbcli uninstall addon {{ item.addon_name }}"
+  when: not (item.enabled | bool)
+  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon uninstall --auto-approve=false {{ item.addon_name }}"
+  register: item_state
+  failed_when: false
+  ignore_errors: true
+  changed_when: false
+
+- name: "Manage default addon {{ item.addon_name }}"
+  when:
+    - item.enabled | bool
+    - item.state == "present"
+    - item.addon_name != "kubeblocks"
+  kubernetes.core.helm:
+    binary_path: "{{ helm_binary }}"
+    chart_ref: "{{ kubeblocks_repo }}/{{ item.addon_name }}-{{ item.version }}.tgz"
+    release_name: "kb-addon-{{ item.addon_name }}"
+    release_namespace: kb-system
+    values:
+      image.registry: "{{ registry_host }}"
+
+    reuse_values: true
+    wait: false
+
+- name: "Ensure add-on state absent: {{ item.addon_name }}"
+  kubernetes.core.helm:
+    binary_path: "{{ helm_binary }}"
+    name: "kb-addon-{{ item.addon_name }}"
+    release_namespace: kb-system
+    state: absent
+    wait: false
+  when:
+    - item.state == "absent"
+    - "'-cluster' not in item.addon_name"

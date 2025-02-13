@@ -1,38 +1,32 @@
-- name: "Ensure add-on state present: {{ item.addon_name }}"
-  when: item.state == 'present'
-  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon install {{ item.addon_name }} --version {{ item.version }}"
-  register: addon_state
-  changed_when: "'AlreadyExists' not in addon_state.stderr"
-  failed_when:
-    - addon_state.rc != '0' 
-    - "'AlreadyExists' not in addon_state.stderr"
-    - "'installed successfully' not in addon_state.stdout"
-  ignore_errors: true
+---
 
-- name: "Ensure add-on enablement: {{ item.addon_name }}."
-  when: 
-    - item.state == 'present'
-    - not addon_state.changed | bool
-  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon {{ 'enable' if item.enabled else 'disable' }} {{ item.addon_name }}"
-  register: addon_enablement
-  failed_when:
-    - addon_enablement.rc != '0' 
-    - "'enabled' not in addon_enablement.stdout"
-    - "'disabled' not in addon_enablement.stdout"
-    - "'already disabled' not in addon_enablement.stdout"
-    - "'no change' not in addon_enablement.stdout"
-    - "'not being updated' not in addon_enablement.stdout"
-  changed_when: 
-    - "'enabled' in addon_enablement.stdout"
-    - "'disabled' in addon_enablement.stdout"
-    - "'already disabled' not in addon_enablement.stdout"
-    - "'no change' not in addon_enablement.stdout"
-    - "'not being updated' not in addon_enablement.stdout"
+- name: "Pull addon {{ item.addon_name }}"
+  kubernetes.core.helm_pull:
+    chart_ref: "{{ helm_repo_url }}/{{ item.addon_name }}"
+    chart_version: "{{ item.version }}"
+    username: "{{ registry_user }}"
+    password: "{{ registry_pass }}"
+    untar_chart: false
+    destination: "{{ kubeblocks_repo }}"
+  when:
+    - desired_state == "present"
+    - item.state == "present"
+    - "'-cluster' not in item.addon_name"
 
-- name: "Ensure add-on state absent: {{ item.addon_name }}"
-  when: item.state == 'absent'
-  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon uninstall {{ item.addon_name }}"
-  register: item_state
-  failed_when: false
-  ignore_errors: true
-  changed_when: false
+- name: "Manage addon {{ item.addon_name }}"
+  kubernetes.core.helm:
+    binary_path: "{{ helm_binary }}"
+    name: "kb-addon-{{ item.addon_name }}"
+    chart_ref: "{{ kubeblocks_repo }}/{{ item.addon_name }}-{{ item.version }}.tgz"
+    release_namespace: kb-system
+    create_namespace: true
+    values:
+      image.registry: "{{ registry_host }}"
+    reuse_values: true
+    state: "{{ desired_state }}"
+    wait: false
+  when:
+    - desired_state == "present"
+    - item.state == "present"
+    - "'-cluster' not in item.addon_name"
+    - item.addon_name != "kubeblocks"

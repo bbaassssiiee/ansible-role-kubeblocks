@@ -1,62 +1,113 @@
 ---
-# kbcli
-kbcli_releases_url: 'https://api.github.com/repos/apecloud/kbcli/releases/latest'
-kbcli_repo_url: 'https://github.com/apecloud/kbcli/releases/download'
-use_kbcli: true
-# set true when k8s is up
-use_kubeblocks: false
 desired_state: present
-verify_state: true
-kbcli_download_package: true
-kbcli_path: /usr/local/bin
+debug: false
 # Semaphore does not pass $HOME so path might need to be more explicit.
 k8s_auth_kubeconfig: "{{ lookup('env', 'HOME') }}/.kube/config"
-# KubeBlocks
-crd_url: 'https://github.com/apecloud/kubeblocks/releases/download/v0.9.2/kubeblocks_crds.yaml'
-helm_repo_url: 'https://apecloud.github.io/helm-charts'
+# KubeBlocks CRDs can be installed offline from files/
+# crd_url: 'https://github.com/apecloud/kubeblocks/releases/download/v0.9.2/kubeblocks_crds.yaml'
+helm_upstream_repo_url: 'https://apecloud.github.io/helm-charts'
+# TODO
+helm_repo_url: 'oci://{{ lookup('env', 'REGISTRY_HOST') }}/helm-apecloud'
 helm_binary: /usr/local/bin/helm
 # KubeBlocks configuration depends on this Boolean:
-use_kb_addons: false
-
+use_kubeblocks: true
+kubeblocks_cache: /tmp/kubeblocks_cache
+kubeblocks_repo: /tmp/kubeblocks_repo
 # state: absent removes addons, TODO disabling/enabling
 kubeblocks_add_ons:
+  - addon_name: alertmanager-webhook-adaptor
+    state: absent
+    enabled: false
+    version: 0.1.4
   - addon_name: apecloud-mysql
     state: absent
     enabled: false
     version: 0.9.0
+  - addon_name: apecloud-otel-collector
+    state: absent
+    enabled: false
+    version: 0.1.2-beta.3
   - addon_name: aws-load-balancer-controller
     state: absent
     enabled: false
     version: 1.4.8
+  - addon_name: csi-driver-nfs
+    state: absent
+    enabled: false
+    version: 4.5.0
+  - addon_name: csi-hostpath-driver
+    state: absent
+    enabled: false
+    version: 0.7.0
+  - addon_name: elasticsearch
+    state: absent
+    enabled: false
+    version: 0.9.0
+  - addon_name: elasticsearch-cluster
+    state: absent
+    enabled: false
+    version: 0.9.0
+  - addon_name: etcd
+    state: present
+    enabled: true
+    version: 0.9.0
+  - addon_name: etcd-cluster
+    state: present
+    enabled: true
+    version: 0.9.0
+  - addon_name: grafana
+    state: absent
+    enabled: false
+    version: 6.43.5
   - addon_name: kafka
     state: present
     enabled: true
     version: 0.9.0
-  - addon_name: llm
+  - addon_name: kubeblocks
     state: present
-    enabled: false
-    version: 0.9.0
-  - addon_name: mongodb
+    enabled: true
+    version: 0.9.2
+  - addon_name: llm
     state: absent
     enabled: false
-    version: 0.9.1
+    version: 0.9.0
   - addon_name: mysql
     state: absent
     enabled: false
     version: 0.9.3
+  - addon_name: mongodb
+    state: present
+    enabled: false
+    version: 0.9.1
   - addon_name: postgresql
     state: present
     enabled: true
     version: 0.9.0
-  - addon_name: pulsar
+  - addon_name: postgresql-cluster
     state: present
+    enabled: true
+    version: 0.9.0
+  - addon_name: prometheus
+    state: absent
+    enabled: false
+    version: 15.16.1
+  - addon_name: pulsar
+    state: absent
     enabled: false
     version: 0.9.1
   - addon_name: qdrant
-    state: present
+    state: absent
     enabled: false
     version: 0.9.1
   - addon_name: redis
     state: present
     enabled: true
-    version: 0.9.0
+    version: 0.9.1
+  - addon_name: redis-cluster
+    state: present
+    enabled: true
+    version: 0.9.1
+  - addon_name: victoria-metrics-agent
+    state: absent
+    enabled: false
+    version: 0.8.41

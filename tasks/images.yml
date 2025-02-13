@@ -1,0 +1,54 @@
+---
+# SYnchronization of container images for on-prem use.
+- name: "Determine images {{ item.addon_name }}"
+  ansible.builtin.shell: |
+    helm template stdout {{ kubeblocks_cache }}/{{ item.addon_name }} | grep image: | sed 's/image://;s/ //g;s/^-//;/IMAGE/d;/^$/d' | sort -u
+  register: image_list
+  changed_when: false
+  when:
+    - item.state == "present"
+  no_log: true
+
+- name: "List image_list {{ item.addon_name }}"
+  when:
+    - item.state == "present"
+    - image_list is defined
+    - image_list.stdout_lines is defined
+  ansible.builtin.debug:
+    msg: "image: {{ image }}"
+  loop: "{{ image_list.stdout_lines }}"
+  loop_control:
+    loop_var: image
+
+- name: "Pull images {{ item.addon_name }}"
+  when:
+    - item.state == "present"
+    - image_list is defined
+    - image_list.stdout_lines is defined
+  ansible.builtin.command: "docker pull {{ image }}"
+  loop: "{{ image_list.stdout_lines }}"
+  loop_control:
+    loop_var: image
+    label: "pull {{ image }}"
+
+- name: "Tag images {{ item.addon_name }}"
+  when:
+    - item.state == "present"
+    - image_list is defined
+    - image_list.stdout_lines is defined
+  ansible.builtin.command: "docker tag {{ image | replace ('docker.io/','') }} {{ registry_host }}/{{ image | replace ('docker.io/','') | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', '') }}"
+  loop: "{{ image_list.stdout_lines }}"
+  loop_control:
+    loop_var: image
+    label: "tag {{ image | replace ('docker.io/',registry_host) | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', registry_host) }}"
+
+- name: "Push images {{ item.addon_name }}"
+  when:
+    - item.state == "present"
+    - image_list is defined
+    - image_list.stdout_lines is defined
+  ansible.builtin.command: "docker push {{ registry_host }}/{{ image | replace ('docker.io/','') | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', '') }}"
+  loop: "{{ image_list.stdout_lines }}"
+  loop_control:
+    loop_var: image
+    label: "push {{ image | replace ('docker.io/',registry_host) | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', registry_host) }}"

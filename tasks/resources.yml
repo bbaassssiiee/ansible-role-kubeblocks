@@ -1,0 +1,48 @@
+---
+# Create Snapshot controller
+# Create custom resource definitions from kubeblocks_crds.yaml
+# ~/.kube/config should be valid
+
+- name: Create temp dir
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: temp
+  register: tempdir
+
+- name: Copy the yaml files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ tempdir.path }}/"
+    mode: '0664'
+  loop:
+    - "{{ crd_manifest }}"
+    - snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+    - snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+    - snapshot.storage.k8s.io_volumesnapshots.yaml
+
+- name: Create Snapshot Contoller
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ tempdir.path }}/{{ item }}"
+    validate:
+      fail_on_error: true
+    wait: true
+  loop:
+    - snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+    - snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+    - snapshot.storage.k8s.io_volumesnapshots.yaml
+
+- name: Create dependent CRDs
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ tempdir.path }}/{{ crd_manifest }}"
+    namespace: kube-system
+    validate:
+      fail_on_error: true
+    wait: true
+
+- name: Remove the temp dir
+  when: tempdir.path is defined
+  ansible.builtin.file:
+    path: "{{ tempdir.path }}"
+    state: absent
