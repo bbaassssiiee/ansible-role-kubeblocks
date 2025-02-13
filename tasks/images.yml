@@ -40,7 +40,6 @@
   loop: "{{ image_list.stdout_lines }}"
   loop_control:
     loop_var: image
-    label: "tag {{ image | replace ('docker.io/',registry_host) | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', registry_host) }}"
 
 - name: "Push images {{ item.addon_name }}"
   when:
@@ -51,4 +50,3 @@
   loop: "{{ image_list.stdout_lines }}"
   loop_control:
     loop_var: image
-    label: "push {{ image | replace ('docker.io/',registry_host) | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', registry_host) }}"

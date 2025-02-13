@@ -2,16 +2,22 @@
 # Install KubeBlocks with Helm chart
 # ~/.kube/config should be valid
 
-# - name: Pull KubeBlocks helm chart
-#   kubernetes.core.helm_pull:
-#     chart_ref: "{{ helm_repo_url }}/kubeblocks"
-#     chart_version: "{{ kubeblocks_version }}"
-#     username: "{{ registry_user }}"
-#     password: "{{ registry_pass }}"
-#     untar_chart: false
-#     destination: "{{ kubeblocks_repo }}"
+- name: Gather information of kubeblocks chart in kb-system namespace
+  kubernetes.core.helm_info:
+    binary_path: "{{ helm_binary }}"
+    name: kubeblocks
+    release_namespace: kb-system
+  register: kubeblocks_info
+
+- name: Display kubeblocks_info
+  ansible.builtin.debug:
+    msg: "{{ kubeblocks_info.status.status }}"
 
 - name: Manage the KubeBlocks chart
+  when:
+    - kubeblocks_info.status.status is not defined
+    - kubeblocks_info.status.status != "pending"
+    - kubeblocks_info.status.status != "deployed"
   ansible.builtin.command: >
     helm --kubeconfig {{ k8s_auth_kubeconfig }} install kubeblocks oci://{{ registry_host }}/helm-apecloud/kubeblocks
     --version 0.9.2
@@ -20,16 +26,3 @@
     --set image.registry={{ registry_host }}
     --set dataProtection.image.registry={{ registry_host }}
     --set addonChartsImage.registry={{ registry_host }}
-#   kubernetes.core.helm:
-#     binary_path: "{{ helm_binary }}"
-#     name: kubeblocks
-#     chart_ref: "{{ kubeblocks_repo }}/kubeblocks-{{ kubeblocks_version }}.tgz"
-#     release_namespace: kb-system
-#     create_namespace: true
-#     reuse_values: true
-#     values:
-#       image.registry: "{{ registry_host }}"
-#       dataProtection.image.registry: "{{ registry_host }}"
-#       addonChartsImage.registry: "{{ registry_host }}"
-#     state: "{{ desired_state }}"
-#     wait: true

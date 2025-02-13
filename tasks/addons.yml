@@ -7,7 +7,7 @@
     username: "{{ registry_user }}"
     password: "{{ registry_pass }}"
     untar_chart: false
-    destination: "{{ kubeblocks_repo }}"
+    destination: "{{ kubeblocks_repo }}/"
   when:
     - desired_state == "present"
     - item.state == "present"

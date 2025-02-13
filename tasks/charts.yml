@@ -1,11 +1,5 @@
 ---
 # Synchronization of helm charts for on-prem use
-- name: Ensure KubeBlocks cache
-  ansible.builtin.file:
-    path: "{{ kubeblocks_cache }}"
-    state: directory
-    mode: '0755'
-
 - name: Pull KubeSpray helm charts
   kubernetes.core.helm_pull:
     chart_ref: "{{ item.addon_name }}"

@@ -6,6 +6,12 @@
       use_kubeblocks: {{ use_kubeblocks }}
       registry_user: {{ registry_user }}
 
+- name: Ensure KubeBlocks cache
+  ansible.builtin.file:
+    path: "{{ kubeblocks_cache }}"
+    state: directory
+    mode: '0755'
+
 - name: Create directory for kubeblocks_repo
   ansible.builtin.file:
     path: "{{ kubeblocks_repo }}"
@@ -18,12 +24,14 @@
     REGISTRY_PASS: "{{ registry_pass }}"
   ansible.builtin.command:
     cmd: 'helm registry login "{{ registry_host }}" --username "{{ registry_user }}" --password $REGISTRY_PASS'
+  changed_when: false
 
 - name: Registry login for docker
   environment:
     REGISTRY_PASS: "{{ registry_pass }}"
   ansible.builtin.command:
     cmd: 'docker login -u "{{ registry_user }}" -p$REGISTRY_PASS "{{ registry_host }}"'
+  changed_when: false
 
 # Online tasks need read-write access
 - name: Online kubeblocks synchronization
