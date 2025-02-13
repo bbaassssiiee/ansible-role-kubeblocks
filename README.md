@@ -1,12 +1,14 @@
 kubeblocks
 ==========
 
-A role to install kbcli to work with KubeBlocks
+A role to install KubeBlocks in a Kubernetes cluster
 
 Requirements
 ------------
 
-EL or Ubuntu Linux.
+Ansible controller, for instance Semaphore.
+Kubernetes cluster
+registry_host (optional)
 
 Role Variables
 --------------
