@@ -24,3 +24,4 @@
     --set image.registry={{ registry_host }}
     --set dataProtection.image.registry={{ registry_host }}
     --set addonChartsImage.registry={{ registry_host }}
+  changed_when: true
