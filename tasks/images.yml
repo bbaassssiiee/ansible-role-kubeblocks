@@ -27,7 +27,7 @@
     - item.state == "present"
     - image_list is defined
     - image_list.stdout_lines is defined
-  ansible.builtin.command: "docker tag {{ image | replace ('docker.io/','') }} {{ registry_host }}/{{ image | replace ('docker.io/','') | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', '') }}"
+  ansible.builtin.command: "docker tag {{ image | replace('docker.io/', '') }} {{ registry_host }}/{{ image | replace('docker.io/', '') | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', '') }}"
   changed_when: false
   loop: "{{ image_list.stdout_lines }}"
   loop_control:
@@ -38,7 +38,7 @@
     - item.state == "present"
     - image_list is defined
     - image_list.stdout_lines is defined
-  ansible.builtin.command: "docker push {{ registry_host }}/{{ image | replace ('docker.io/','') | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', '') }}"
+  ansible.builtin.command: "docker push {{ registry_host }}/{{ image | replace('docker.io/', '') | replace('apecloud-registry.cn-zhangjiakou.cr.aliyuncs.com/', '') }}"
   register: image_pushed
   changed_when: "': Pushed' in image_pushed.stdout"
   loop: "{{ image_list.stdout_lines }}"
