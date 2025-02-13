@@ -11,6 +11,7 @@
     - item.enabled | bool
     - item.state == "present"
     - item.addon_name != "kubeblocks"
+    - "'-cluster' not in item.addon_name"
   kubernetes.core.helm:
     binary_path: "{{ helm_binary }}"
     chart_ref: "{{ kubeblocks_repo }}/{{ item.addon_name }}-{{ item.version }}.tgz"
@@ -18,7 +19,6 @@
     release_namespace: kb-system
     values:
       image.registry: "{{ registry_host }}"
-
     reuse_values: true
     wait: false
 
