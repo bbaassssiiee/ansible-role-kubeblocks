@@ -1,4 +1,21 @@
 ---
+- name: "When not enabled run kbcli uninstall addon {{ item.addon_name }}"
+  when: (desired_state == "absent" or item.state == "absent") and ("'-cluster' not in item.addon_name")
+  ansible.builtin.command: "kbcli --kubeconfig={{ k8s_auth_kubeconfig }} addon uninstall --auto-approve=false {{ item.addon_name }}"
+  register: item_state
+  failed_when: false
+  ignore_errors: true
+  changed_when: false
+
+- name: "Ensure add-on absent by Helm: {{ item.addon_name }}"
+  when: (desired_state == "absent" or item.state == "absent") and ("'-cluster' not in item.addon_name")
+  kubernetes.core.helm:
+    binary_path: "{{ helm_binary }}"
+    name: "kb-addon-{{ item.addon_name }}"
+    release_namespace: kb-system
+    state: absent
+    wait: true
+  failed_when: false
 
 - name: "Pull addon {{ item.addon_name }}"
   kubernetes.core.helm_pull:
@@ -13,6 +30,7 @@
     - item.state == "present"
     - "'-cluster' not in item.addon_name"
 
+# snapshot-controller chart needs to be patched with the private image url
 - name: "Manage addon {{ item.addon_name }}"
   kubernetes.core.helm:
     binary_path: "{{ helm_binary }}"
@@ -21,10 +39,30 @@
     release_namespace: kb-system
     create_namespace: true
     values:
-      image.registry: "{{ registry_host }}"
+      image.repository: "{{ registry_host }}/sig-storage/snapshot-controller"
     reuse_values: true
-    state: "{{ desired_state }}"
-    wait: false
+    state: "present"
+    wait: true
+  when:
+    - registry_host is defined
+    - desired_state == "present"
+    - item.state == "present"
+    - "'-cluster' not in item.addon_name"
+    - item.addon_name == "snapshot-controller"
+
+# The charts can to be patched with the private registry_host
+- name: "Manage addon {{ item.addon_name }}"
+  kubernetes.core.helm:
+    binary_path: "{{ helm_binary }}"
+    name: "kb-addon-{{ item.addon_name }}"
+    chart_ref: "{{ kubeblocks_repo }}/{{ item.addon_name }}-{{ item.version }}.tgz"
+    release_namespace: kb-system
+    create_namespace: true
+    values:
+      image.registry: "{{ registry_host is defined | ternary(registry_host, omit) }}"
+    reuse_values: true
+    state: "present"
+    wait: true
   when:
     - desired_state == "present"
     - item.state == "present"

@@ -3,20 +3,19 @@
 # Create custom resource definitions from kubeblocks_crds.yaml
 # ~/.kube/config should be valid
 
-- name: Copy the yaml files
+- name: "Copy the snapshot_controller files"
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ kubeblocks_cache }}/"
     mode: '0664'
   loop:
-    - "{{ crd_manifest }}"
     - snapshot.storage.k8s.io_volumesnapshotclasses.yaml
     - snapshot.storage.k8s.io_volumesnapshotcontents.yaml
     - snapshot.storage.k8s.io_volumesnapshots.yaml
 
-- name: Create Snapshot Contoller
+- name: "Manage Snapshot Controller"
   kubernetes.core.k8s:
-    state: present
+    state: "{{ snapshot_controller | ternary('present', 'absent') }}"
     src: "{{ kubeblocks_cache }}/{{ item }}"
     validate:
       fail_on_error: true
@@ -26,7 +25,13 @@
     - snapshot.storage.k8s.io_volumesnapshotcontents.yaml
     - snapshot.storage.k8s.io_volumesnapshots.yaml
 
-- name: Create dependent CRDs
+- name: Copy the kubeblocks CRDs
+  ansible.builtin.copy:
+    src: "{{ crd_manifest }}"
+    dest: "{{ kubeblocks_cache }}/"
+    mode: '0664'
+
+- name: Create the kubeblocks CRDs
   kubernetes.core.k8s:
     state: present
     src: "{{ kubeblocks_cache }}/{{ crd_manifest }}"
@@ -34,3 +39,11 @@
     validate:
       fail_on_error: true
     wait: true
+
+- name: Waiting 2 minutes for reconciliation
+  ansible.builtin.debug:
+    msg: ...
+
+- name: Waited 2 minutes for reconciliation
+  ansible.builtin.wait_for:
+    timeout: 120

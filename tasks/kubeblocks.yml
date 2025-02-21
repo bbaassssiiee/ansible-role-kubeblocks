@@ -12,10 +12,21 @@
 - name: Display kubeblocks_info
   ansible.builtin.debug:
     msg: "{{ kubeblocks_info }}"
+    verbosity: 1
 
 # TODO some states are not covered yet
+- name: Check the kubeblocks pods
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: kb-system
+  register: kb_pods
+
+- name: Display information on pods
+  ansible.builtin.debug:
+    msg: "{{ kb_pods }}"
+
 - name: Manage the KubeBlocks chart
-  when: kubeblocks_info.status is not defined or ( kubeblocks_info.status.status != "pending" or kubeblocks_info.status.status != "deployed")
   ansible.builtin.command: >
     helm --kubeconfig {{ k8s_auth_kubeconfig }} install kubeblocks oci://{{ registry_host }}/helm-apecloud/kubeblocks
     --version 0.9.2
@@ -24,4 +35,8 @@
     --set image.registry={{ registry_host }}
     --set dataProtection.image.registry={{ registry_host }}
     --set addonChartsImage.registry={{ registry_host }}
+    --wait
+    --wait-for-jobs
+  register: chart_install
   changed_when: true
+  ignore_errors: true

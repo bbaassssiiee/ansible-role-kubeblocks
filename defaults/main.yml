@@ -107,7 +107,12 @@ kubeblocks_add_ons:
     state: present
     enabled: true
     version: 0.9.1
+  - addon_name: snapshot-controller
+    state: present
+    enabled: true
+    version: 1.7.2
   - addon_name: victoria-metrics-agent
     state: absent
     enabled: false
     version: 0.8.41
+snapshot_controller: false
